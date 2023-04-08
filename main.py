@@ -67,12 +67,11 @@ while True:
         while True:
             # Receive data from the client
             data = client_socket.recv(BUFFER_SIZE)
-            data = data.strip().decode("UTF-8")
-
             if not data:    # If there is no data, the client has disconnected
                 logger.info(f'Connection closed by {client_address}')
                 break
-
+            
+            data = data.strip().decode("UTF-8")
             logger.debug(f'Received {data} from {client_address}')
             honey.honey(client_socket, data)    # Send the data to the honey function
 
