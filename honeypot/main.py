@@ -29,7 +29,7 @@ def setup_logging():    # Setup logging
     file_handler = logging.FileHandler("server.log")
     file_handler.setLevel(logging.DEBUG)
     console_handler = logging.StreamHandler()
-    console_handler.setLevel(logging.INFO)
+    console_handler.setLevel(logging.DEBUG)
 
     formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(message)s")
     file_handler.setFormatter(formatter)
@@ -62,7 +62,7 @@ while True:
         logger.info(f'Connected by {client_address}')
 
         data = "Hello World"
-        client_socket.sendall(data.encode("UTF-8"))  # Send data to the client
+        client_socket.sendall(data.encode("utf-8"))  # Send data to the client
 
         while True:
             # Receive data from the client
@@ -71,9 +71,12 @@ while True:
                 logger.info(f'Connection closed by {client_address}')
                 break
             
-            data = data.strip().decode("UTF-8")
+            data = data.strip().decode("utf-8")
             logger.debug(f'Received {data} from {client_address}')
-            honey.honey(client_socket, data)    # Send the data to the honey function
+            
+            response = honey.honey(data)    # Send the data to the honey function
+            if response:
+                logger.debug(f'Sending {response} to {client_address}')
 
     except socket.timeout as e:
         logger.info(f'Connection timed out for {client_address}')
