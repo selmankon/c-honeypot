@@ -5,11 +5,17 @@ import logging
 
 HOST = "127.0.0.1"
 PORT = 65432
+BUFFER_SIZE = 1024
 
 
 def signal_handler(sig, frame):  # Signal handler for Ctrl+C
     print()
     logger.info("Server shutting down")
+    try:
+        client_socket.close()
+    except:
+        pass
+    server_socket.shutdown(socket.SHUT_RDWR)
     server_socket.close()
     sys.exit(0)
 
@@ -45,8 +51,11 @@ server_socket.listen()  # Listen for incoming connections
 
 while True:
     try:
-        client_socket, client_address = server_socket.accept()  # Accept a connection
+        client_socket, client_socket_address = server_socket.accept()  # Accept a connection
         client_socket.settimeout(20)    # Set a timeout for the client
+        client_ip, client_port = client_socket_address
+        client_address = f'{client_ip}:{client_port}'
+
     except Exception as e:
         logger.error(f'Server Exception: {e}')
         signal_handler(None, None)  # Exit the program
@@ -58,7 +67,8 @@ while True:
         client_socket.sendall(data.encode("UTF-8"))  # Send data to the client
 
         while True:
-            data = client_socket.recv(1024)  # Receive data from the client
+            # Receive data from the client
+            data = client_socket.recv(BUFFER_SIZE)
             if not data:    # If there is no data, the client has disconnected
                 logger.info(f'Connection closed by {client_address}')
                 break
