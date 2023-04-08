@@ -2,6 +2,7 @@ import socket
 import signal
 import sys
 import logging
+import honey
 
 HOST = "127.0.0.1"
 PORT = 65432
@@ -50,10 +51,9 @@ server_socket.listen()  # Listen for incoming connections
 while True:
     try:
         client_socket, client_socket_address = server_socket.accept()  # Accept a connection
-        client_socket.settimeout(20)    # Set a timeout for the client
         client_ip, client_port = client_socket_address
         client_address = f'{client_ip}:{client_port}'
-
+        client_socket.settimeout(20)    # Set a timeout for the client
     except Exception as e:
         logger.error(f'Server Exception: {e}')
         signal_handler(None, None)  # Exit the program
@@ -67,11 +67,20 @@ while True:
         while True:
             # Receive data from the client
             data = client_socket.recv(BUFFER_SIZE)
+            data = data.strip().decode("UTF-8")
+
             if not data:    # If there is no data, the client has disconnected
                 logger.info(f'Connection closed by {client_address}')
                 break
-            logger.debug(f'Received {data} from {client_address}')
 
+            logger.debug(f'Received {data} from {client_address}')
+            honey.honey(client_socket, data)    # Send the data to the honey function
+
+    except socket.timeout as e:
+        logger.info(f'Connection timed out for {client_address}')
+    except UnicodeError as e:
+        logger.error(f'UnicodeError for {client_address}. {e}')
     except Exception as e:
         logger.error(f'Client Exception: {e}')
+    finally:
         client_socket.close()
