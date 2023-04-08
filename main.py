@@ -13,7 +13,7 @@ def signal_handler(sig, frame):
     sys.exit(0)
 
 
-signal.signal(signal.SIGINT, signal_handler)
+signal.signal(signal.SIGINT, signal_handler)    # Register the signal handler
 
 server_socket = socket.socket(
     socket.AF_INET, socket.SOCK_STREAM)   # Create a TCP socket
