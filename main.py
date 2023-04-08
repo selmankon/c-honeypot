@@ -15,7 +15,6 @@ def signal_handler(sig, frame):  # Signal handler for Ctrl+C
         client_socket.close()
     except:
         pass
-    server_socket.shutdown(socket.SHUT_RDWR)
     server_socket.close()
     sys.exit(0)
 
@@ -29,8 +28,7 @@ def setup_logging():    # Setup logging
     file_handler = logging.FileHandler("server.log")
     file_handler.setLevel(logging.DEBUG)
     console_handler = logging.StreamHandler()
-    # Change to INFO to hide debug messages
-    console_handler.setLevel(logging.DEBUG)
+    console_handler.setLevel(logging.INFO)
 
     formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(message)s")
     file_handler.setFormatter(formatter)
