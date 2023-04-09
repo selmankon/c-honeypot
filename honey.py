@@ -1,5 +1,5 @@
 
-def honey(data):
+def commands(data):
     # This is the honey function
     # It will be called when the honeypot is triggered
     # It will send a fake response to the client
