@@ -5,9 +5,9 @@ import logging
 import honey
 
 LHOST = "127.0.0.1"  # Honeypot Server IP
-LPORT = 65432   # Honeypot Server port
+LPORT = 65400   # Honeypot Server port
 RHOST = "127.0.0.1"  # Dashboard IP
-RPORT = 65433   # Dashboard port
+RPORT = 65420   # Dashboard port
 BUFFER_SIZE = 1024
 
 
@@ -22,14 +22,13 @@ def signal_handler(sig, frame):  # Signal handler for Ctrl+C
     try:
         dashboard_socket.close()
         logger.info(f'Dashboard({RHOST}:{RPORT}) connection has been closed')
-    except Exception as e:
-        logger.error(
-            f'Unable to close dashboard({RHOST}:{RPORT}) connection. {e}')
+    except:
+        pass
     try:
         server_socket.close()
         logger.info(f'Honeypot server({LHOST}:{LPORT}) has been closed')
-    except Exception as e:
-        logger.error(f'Unable to close honeypot server({LHOST}:{LPORT}). {e}')
+    except:
+        pass
     sys.exit(0)
 
 
@@ -69,26 +68,28 @@ try:
     server_socket.listen()  # Listen for connections
     logger.info(f'Listening on {LHOST}:{LPORT}')
 except Exception as e:
-    logger.error(f'Server Socket Exception: {e}')
+    logger.error(f'Unable to create honeypot server({LHOST}:{LPORT}). {e}')
     signal_handler(None, None)
 
 try:
     dashboard_socket = socket.socket(
         socket.AF_INET, socket.SOCK_STREAM)   # Create a TCP socket for the dashboard
-    # dashboard_socket.connect((RHOST, RPORT))  # Connect to the dashboard server
+    dashboard_socket.connect((RHOST, RPORT))  # Connect to the dashboard server
     logger.info(f'Connected to dashboard({RHOST}:{RPORT})')
 except Exception as e:
-    logger.error(f'Dashboard Socket Exception: {e}')
+    logger.error(f'Unable to connect dashboard server({LHOST}:{LPORT}). {e}')
     signal_handler(None, None)
 
 while True:
+    # DASHBOARD SOKETİ İLE BAĞLANTI KURULMUŞ MU KONTROL EDİLİR. EĞER BAĞLANTI YOKSA CONNECT İLE KURULUR
+
     try:
         client_socket, client_socket_address = server_socket.accept()  # Accept a connection
         client_ip, client_port = client_socket_address
         client_address = f'{client_ip}:{client_port}'
         client_socket.settimeout(20)    # Set a timeout for the client
     except Exception as e:
-        logger.error(f'Client-Server Exception: {e}')
+        logger.error(f'Unable to accept connection. {e}')
         signal_handler(None, None)  # Exit the program
 
     try:
@@ -126,4 +127,4 @@ while True:
         logger.error(f'Client Exception: {e}')
     finally:
         client_socket.close()
-        logger.info(f'{client_address} connection has been closed')
+        logger.info(f'Connection from {client_address} has been closed')
