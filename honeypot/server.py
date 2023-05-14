@@ -3,6 +3,7 @@ from signal import signal, SIGINT
 import logging
 import sys
 from settings import BUFFER_SIZE, SERVER_HOST, SERVER_PORT, LOG_FILE, BANNER, SHELL_PROMPT
+from cmd import run_command
 
 
 class HoneypotServer:
@@ -62,13 +63,11 @@ class HoneypotServer:
                         f'Received {data} from {client_address[0]}:{client_address[1]}.')
                     data = data.strip().decode("utf-8", "backslashreplace")
 
-                    # response = self.honey.commands(data)
-                    response = data + " TEST\n"
+                    response = run_command(data)
                     if response:
-                        client_socket.sendall(response.encode(
-                            "utf-8", "backslashreplace"))
+                        client_socket.sendall(response)
                         self.logger.debug(
-                            f'Sending {response.encode("utf-8", "backslashreplace")} to {client_address[0]}:{client_address[1]}.')
+                            f'Sending {response} to {client_address[0]}:{client_address[1]}.')
             except timeout as e:
                 self.logger.info(
                     f'Client({client_address[0]}:{client_address[1]}) has timed out.')
@@ -83,7 +82,7 @@ class HoneypotServer:
                 self.logger.info(
                     f'Client({client_address[0]}:{client_address[1]}) has disconnected.')
 
-    @staticmethod
+    @ staticmethod
     def _setup_socket(host, port):
         server_socket = socket(AF_INET, SOCK_STREAM)
         server_socket.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
@@ -91,7 +90,7 @@ class HoneypotServer:
         server_socket.listen()
         return server_socket
 
-    @staticmethod
+    @ staticmethod
     def _setup_logger():
         logger = logging.getLogger("honeypot_server")
         logger.setLevel(logging.DEBUG)
