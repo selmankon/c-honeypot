@@ -12,32 +12,6 @@ def commands(data):
     return response
 
 
-# data = """__  _______         _
-# \ \/ /_   _|__  ___| |__
-#  \  /  | |/ _ \/ __| '_ \\
-#  /  \  | |  __/ (__| | | |
-# /_/\_\ |_|\___|\___|_| |_|
-
-
-#  ____            _
-# / ___| _   _ ___| |_ ___ _ __ ___
-# \___ \| | | / __| __/ _ \ '_ ` _ \\
-#  ___) | |_| \__ \ ||  __/ | | | | |
-# |____/ \__, |___/\__\___|_| |_| |_|
-#        |___/
-
-# Unauthorized access is prohibited.
-# Only authorized individuals are permitted to access and
-# access attempts are being recorded. This system belongs
-# to X Tech System. If you are not an authorized user,
-# DISCONNECT IMMEDIATELY.
-
-# Unauthorized Access is punishable under Articles 243, 244,
-# 245, and 246 of the Turkish Penal Code.
-
-# # """
-
-
 # if command == 'whoami':
 #     data="anadolufs\n# "
 #     honeypot_socket.send(data.encode())
