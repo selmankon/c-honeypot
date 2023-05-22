@@ -1,3 +1,3 @@
 #! /bin/sh
 
-python ./honeypot/server.py
+python3 ./honeypot/server.py

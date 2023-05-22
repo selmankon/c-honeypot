@@ -25,7 +25,7 @@ def check_command(command, workdir, client_address=None, logger=None):
         elif command == "whoami":
             response = whoami_command()
         else:
-            response = permission_denied(command)
+            response = command_not_found(command)
     except Exception as e:
         logger.error(
             f"Error while executing command '{command}' on {client_address[0]}:{client_address[1]}. {e}")
