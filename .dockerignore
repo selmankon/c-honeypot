@@ -3,6 +3,6 @@ Dockerfile
 docker-compose.yml
 .dockerignore
 .gitignore
-*.log
-*/*.log
-*.md
+**/*.log
+**/*.md
+**/__pycache__
