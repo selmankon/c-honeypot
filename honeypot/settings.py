@@ -1,6 +1,6 @@
 # Server/Socket Settings
 BUFFER_SIZE = 1024
-CONNECTION_TIMEOUT = 6000  # Telnet default timeout value: 60sec
+CONNECTION_TIMEOUT = 40  # Telnet default timeout value: 60sec
 SERVER_HOST = '0.0.0.0'
 SERVER_PORT = 65400
 LOG_FILE = 'honeypot-server.log'
@@ -12,7 +12,6 @@ POT_USERNAME = 'anadolufs'
 POT_IP = '192.168.4.132'
 POT_BROADCAST = '192.168.4.135'
 POT_MASK = '255.255.255.248'
-SHELL_PROMPT = f'[{POT_HOSTNAME} ~]# '
 BANNER = f"""
     ========================================
                 DEMO INC. SERVER
@@ -30,3 +29,9 @@ BANNER = f"""
     ========================================
 
 """
+
+
+# Admin Panel Settings
+PANEL_HOST = '172.31.1.24'
+PANEL_PORT = 5000
+PANEL_ENDPOINT = f"http://{PANEL_HOST}:{PANEL_PORT}/log/create"

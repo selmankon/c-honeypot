@@ -2,7 +2,8 @@ from socket import socket, timeout, AF_INET, SOCK_STREAM, SOL_SOCKET, SO_REUSEAD
 from signal import signal, SIGINT
 import logging
 import sys
-from settings import BUFFER_SIZE, SERVER_HOST, SERVER_PORT, LOG_FILE, BANNER, SHELL_PROMPT, CONNECTION_TIMEOUT, POT_HOSTNAME, POT_USERNAME
+from settings import BUFFER_SIZE, SERVER_HOST, SERVER_PORT, LOG_FILE, BANNER, CONNECTION_TIMEOUT, POT_USERNAME, POT_HOSTNAME
+from utils import del_home_workdir, send_to_api
 from shell import check_command
 
 
@@ -56,7 +57,8 @@ class HoneypotServer:
                     "utf-8", "backslashreplace"))
 
                 while True:
-                    client_socket.sendall(SHELL_PROMPT.encode(
+                    shell_prompt = f'[{POT_HOSTNAME} {del_home_workdir(self.workdir)}]# '
+                    client_socket.sendall(shell_prompt.encode(
                         "utf-8", "backslashreplace"))
                     data = client_socket.recv(BUFFER_SIZE)
                     if not data:    # If there is no data, the client has disconnected
@@ -66,8 +68,14 @@ class HoneypotServer:
                         f'Received {data} from {client_address[0]}:{client_address[1]}.')
                     data = data.strip().decode("utf-8", "backslashreplace")
 
+                    x, error = send_to_api(data, client_address)
+                    if x == False:
+                        self.logger.error(
+                            f'Unable to send data to API. {error}')
+
                     response, self.workdir = check_command(
                         data, self.workdir, client_address, self.logger)
+
                     if response == True:
                         break
                     response = response.encode(
@@ -87,7 +95,6 @@ class HoneypotServer:
                 self.logger.error(
                     f'Unable to communicate with client({client_address[0]}:{client_address[1]}). {e}')
             finally:
-                client_socket.sendall(b'\n')
                 client_socket.close()
                 self.logger.info(
                     f'Client({client_address[0]}:{client_address[1]}) has disconnected.')

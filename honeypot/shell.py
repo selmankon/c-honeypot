@@ -80,6 +80,8 @@ def cd_command(command, workdir, client_address=None, logger=None, from_ls=False
             new_workdir = f"""{workdir}{command_params}"""
         else:
             new_workdir = f"""{workdir}/{command_params}"""
+    elif command_params.startswith("/home"):
+        new_workdir = command_params
     elif command_params.startswith("/"):
         return permission_denied(command), old_workdir
     elif command_params.startswith("~"):
