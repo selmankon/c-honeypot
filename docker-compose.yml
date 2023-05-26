@@ -1,4 +1,4 @@
-version: '0.1'
+version: '0.2'
 
 services:
   honeypot-server:
@@ -6,4 +6,4 @@ services:
       context: ./
       dockerfile: Dockerfile
     ports:
-      - "65400:65400"
+      - "23:65400"
