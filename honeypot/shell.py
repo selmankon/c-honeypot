@@ -1,5 +1,5 @@
 from settings import POT_HOSTNAME, POT_IP, POT_BROADCAST, POT_MASK, POT_USERNAME
-
+from utils import get_fake_data
 
 def check_command(command, workdir, client_address=None, logger=None):
     try:
@@ -24,6 +24,8 @@ def check_command(command, workdir, client_address=None, logger=None):
             response = pwd_command(workdir)
         elif command == "whoami":
             response = whoami_command()
+        elif command.startswith("cat") or command == "cat":
+            response = cat_command(command, workdir)
         else:
             response = command_not_found(command)
     except Exception as e:
@@ -55,6 +57,7 @@ def cd_command(command, workdir, client_address=None, logger=None, from_ls=False
                       f"/home/{POT_USERNAME}/backup", f"/home/{POT_USERNAME}/Desktop", f"/home/{POT_USERNAME}/Documents", f"/home/{POT_USERNAME}/Downloads", f"/home/{POT_USERNAME}/Public", f"/home/{POT_USERNAME}/Templates"]
 
     command_split = command.split(" ")
+    
     if len(command_split) == 1:
         return command_not_found(command), old_workdir
 
@@ -108,7 +111,7 @@ def cd_command(command, workdir, client_address=None, logger=None, from_ls=False
 
 
 def help_command():
-    response = """hostname id ifconfig ls ps pwd whoami\n"""
+    response = """cat hostname id ifconfig ls ps pwd whoami\n"""
     return response
 
 
@@ -121,6 +124,25 @@ def id_command():
     response = f"""uid=1003({POT_USERNAME}) gid=1003({POT_USERNAME}) groups=1002(admins),4(adm),24(cdrom),27(sudo),30(dip),46(plugdev)\n"""
     return response
 
+def cat_command(command, workdir):
+    command_split = command.split(" ")
+    if len(command_split) == 1:
+        response = f"""/bin/ysh: No such file or directory\n"""
+        return response
+
+    if workdir == "/home/anadolufs/backup" and command_split[1] == "31052023.csv":
+            response = get_fake_data("data/31052023.csv")
+    elif workdir == "/home/anadolufs" and command_split[1] == "backup/31052023.csv":
+        response = get_fake_data("data/31052023.csv")
+    elif workdir == "/home" and command_split[1] == "anadolufs/backup/31052023.csv":
+        response = get_fake_data("data/31052023.csv")
+    else:
+        if command == "cat /home/anadolufs/backup/31052023.csv":
+            response = get_fake_data("data/31052023.csv")
+        else:
+            response = no_such_file_or_directory(command_split[1])
+
+    return response
 
 def ifconfig_command():
     response = f"""eth0      Link encap:Ethernet  HWaddr 02:42:AC:11:00:02
@@ -152,7 +174,7 @@ drwxr-xr-x    1 {POT_USERNAME}     {POT_USERNAME}          4096 May  9 18:42 {PO
             response = f"""total 36
 drwxr-xr-x    1 {POT_USERNAME}     {POT_USERNAME}          4096 May 21 14:26 .
 drwxr-xr-x    1 root          {POT_USERNAME}          4096 May 21 14:26 ..
-drwxr-xr-x    1 {POT_USERNAME}     {POT_USERNAME}          4096 May 15 20:44 backup
+drwxr-xr-x    2 {POT_USERNAME}     {POT_USERNAME}          4096 May 15 20:44 backup
 drwxr-xr-x    5 {POT_USERNAME}     {POT_USERNAME}           360 May 21 14:26 Desktop
 drwxr-xr-x    1 {POT_USERNAME}     {POT_USERNAME}          4096 May 21 14:26 Documents
 drwxr-xr-x    2 {POT_USERNAME}     {POT_USERNAME}          4096 May  9 18:42 Public
@@ -160,7 +182,8 @@ drwxr-xr-x    1 {POT_USERNAME}     {POT_USERNAME}          4096 May  9 18:42 Tem
         elif workdir == f"/home/{POT_USERNAME}/backup":
             response = f"""total 8
 drwxr-xr-x    1 {POT_USERNAME}     {POT_USERNAME}          4096 May 21 14:26 .
-drwxr-xr-x    1 {POT_USERNAME}     {POT_USERNAME}          4096 May  9 18:42 ..\n"""
+drwxr-xr-x    1 {POT_USERNAME}     {POT_USERNAME}          4096 May  9 18:42 ..
+-r--r--r--    1 {POT_USERNAME}     {POT_USERNAME}        138603 May 31 23:76 31052023.csv\n"""
         elif workdir == f"/home/{POT_USERNAME}/Desktop":
             response = f"""total 8
 drwxr-xr-x    1 {POT_USERNAME}     {POT_USERNAME}          4096 May 21 14:26 .

@@ -26,3 +26,9 @@ def send_to_api(cmd, ip_port):
         return False, e
 
     return True, None
+
+
+def get_fake_data(file):
+    with open(file, 'r') as f:
+        data = f.read()
+    return data
