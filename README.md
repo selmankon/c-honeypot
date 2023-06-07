@@ -1,5 +1,3 @@
-# Caveman Honeypot
-
 [c-honeypot-adminpanel](https://github.com/selmankon/c-honeypot-adminpanel) is the admin panel for this honeypot
 
 ---
